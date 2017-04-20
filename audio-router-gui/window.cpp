@@ -29,26 +29,55 @@ int window::OnCreate(LPCREATESTRUCT lpcs)
 
     return 0;
 }
+LRESULT window::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+
+    if (m_NotifyIconData.cbSize)
+    {
+        Shell_NotifyIcon(NIM_DELETE, &m_NotifyIconData);
+    }
+
+    return 0;
+}
 
 LRESULT window::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    if(wParam == SC_MINIMIZE)
+    if (wParam == SC_MINIMIZE || IsWindowVisible() && wParam == SC_CLOSE)
     {
-        for(dialog_main::dialog_arrays_t::iterator it = this->dlg_main->dialog_arrays.begin();
-            it != this->dlg_main->dialog_arrays.end();
-            it++)
+        /* for(dialog_main::dialog_arrays_t::iterator it = this->dlg_main->dialog_arrays.begin();
+             it != this->dlg_main->dialog_arrays.end();
+             it++)
+         {
+             for(dialog_array::dialog_controls_t::iterator jt = (*it)->dialog_controls.begin();
+                 jt != (*it)->dialog_controls.end();
+                 jt++)
+             {
+                 (*jt)->set_display_name(false, true);
+             }
+         }*/
+
+        if (!m_NotifyIconData.cbSize)
         {
-            for(dialog_array::dialog_controls_t::iterator jt = (*it)->dialog_controls.begin();
-                jt != (*it)->dialog_controls.end();
-                jt++)
-            {
-                (*jt)->set_display_name(false, true);
-            }
+            m_NotifyIconData.cbSize = NOTIFYICONDATAA_V1_SIZE;
+            m_NotifyIconData.hWnd = m_hWnd;
+            m_NotifyIconData.uID = 1;
+            m_NotifyIconData.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+            m_NotifyIconData.uCallbackMessage = WM_SYSTEMTRAYICON;
+            m_NotifyIconData.hIcon = AtlLoadIconImage(IDR_MAINFRAME, LR_DEFAULTCOLOR, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+            ATL::CString sWindowText;
+            GetWindowText(sWindowText);
+            _tcscpy_s(m_NotifyIconData.szTip, sWindowText);
         }
+        
+        Shell_NotifyIcon(NIM_ADD, &m_NotifyIconData);
+        ShowWindow(SW_HIDE);
+
+        bHandled = TRUE;
+        return 0;
     }
     else if(wParam == SC_RESTORE)
     {
-        for(dialog_main::dialog_arrays_t::iterator it = this->dlg_main->dialog_arrays.begin();
+        /*for(dialog_main::dialog_arrays_t::iterator it = this->dlg_main->dialog_arrays.begin();
             it != this->dlg_main->dialog_arrays.end();
             it++)
         {
@@ -58,10 +87,44 @@ LRESULT window::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
             {
                 (*jt)->set_display_name(false, false);
             }
-        }
+        }*/
+
     }
 
     bHandled = FALSE;
+    return 0;
+}
+
+LRESULT window::OnSystemTrayIcon(UINT, WPARAM wParam, LPARAM lParam) {
+
+    ATLASSERT(wParam == 1);
+    switch (lParam)
+    {
+		case WM_LBUTTONDBLCLK:
+			SendMessage(WM_COMMAND, SC_RESTORE);
+			break;
+
+		case WM_RBUTTONUP:
+		{
+			SetForegroundWindow(m_hWnd);
+
+			CPoint pos;
+			ATLVERIFY(GetCursorPos(&pos));
+
+			CMenu menu;
+			menu.LoadMenuW(IDR_SYSTRAY_MENU);
+			CMenuHandle popupMenu = menu.GetSubMenu(0);
+
+			popupMenu.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN, pos.x, pos.y, this->m_hWnd);
+		}
+		break;
+    }
+    return 0;
+}
+
+LRESULT window::OnSystemTrayExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    SendMessage(WM_SYSCOMMAND, SC_CLOSE);
     return 0;
 }
 
@@ -119,4 +182,18 @@ LRESULT window::OnFileSwitchview(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT window::OnNcHitTest(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     return HTCLOSE;
+}
+
+
+LRESULT window::OnRestore(UINT, INT, HWND)
+{
+    if (m_NotifyIconData.cbSize)
+    {
+        Shell_NotifyIcon(NIM_DELETE, &m_NotifyIconData);
+    }
+
+    ShowWindow(SW_SHOW);
+    BringWindowToTop();
+
+    return 0;
 }
