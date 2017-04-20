@@ -18,9 +18,9 @@ public:
     dialog_main* dlg_main;
     formview* form_view;
     /*dialog_licensing* license;*/
-    /*bootstrapper* bootstrap;*/
+    bootstrapper* bootstrap;
 
-    explicit window(/*bootstrapper**/);
+    explicit window(bootstrapper*);
     ~window();
 
     DECLARE_FRAME_WND_CLASS(L"Audio Router", IDR_MAINFRAME);

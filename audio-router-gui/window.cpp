@@ -2,7 +2,7 @@
 
 telemetry* telemetry_m = NULL;
 
-window::window(/*bootstrapper* bootstrap*/) : dlg_main_b(true)/*, license(NULL)*//*, bootstrap(bootstrap)*/
+window::window(bootstrapper* bootstrap) : dlg_main_b(true)/*, license(NULL)*/, bootstrap(bootstrap)
 {
     this->dlg_main = new dialog_main(*this);
     this->form_view = new formview(*this);
