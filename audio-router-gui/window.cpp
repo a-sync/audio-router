@@ -16,7 +16,7 @@ window::~window()
 int window::OnCreate(LPCREATESTRUCT lpcs)
 {
     this->m_hWndClient = this->dlg_main->Create(this->m_hWnd);
-    this->dlg_main->ShowWindow(SW_SHOW);
+    this->dlg_main->ShowWindow(SW_SHOWMINNOACTIVE);
 
     return 0;
 }
