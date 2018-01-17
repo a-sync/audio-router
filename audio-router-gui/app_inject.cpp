@@ -101,8 +101,8 @@ void app_inject::populate_devicelist()
         PropVariantInit(&varName);
 
         // Get the endpoint's friendly-name property.
-		if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName)))
-			this->device_names.push_back(varName.pwszVal);
+        if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName)))
+            this->device_names.push_back(varName.pwszVal);
 
         CoTaskMemFree(pwszID);
         PropVariantClear(&varName);
