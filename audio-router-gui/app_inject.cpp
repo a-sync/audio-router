@@ -104,8 +104,6 @@ void app_inject::populate_devicelist()
         if (SUCCEEDED(pProps->GetValue(PKEY_Device_FriendlyName, &varName)))
             this->device_names.push_back(varName.pwszVal);
 
-        this->device_names.push_back(varName.pwszVal);
-
         CoTaskMemFree(pwszID);
         PropVariantClear(&varName);
         pProps->Release();
