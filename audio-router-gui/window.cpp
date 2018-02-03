@@ -47,20 +47,7 @@ LRESULT window::OnSysCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
              }
          }*/
 
-        if (!m_NotifyIconData.cbSize)
-        {
-            m_NotifyIconData.cbSize = NOTIFYICONDATAA_V1_SIZE;
-            m_NotifyIconData.hWnd = m_hWnd;
-            m_NotifyIconData.uID = 1;
-            m_NotifyIconData.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-            m_NotifyIconData.uCallbackMessage = WM_SYSTEMTRAYICON;
-            m_NotifyIconData.hIcon = AtlLoadIconImage(IDR_MAINFRAME, LR_DEFAULTCOLOR, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
-            ATL::CString sWindowText;
-            GetWindowText(sWindowText);
-            _tcscpy_s(m_NotifyIconData.szTip, sWindowText);
-        }
-        
-        Shell_NotifyIcon(NIM_ADD, &m_NotifyIconData);
+		this->addTrayIcon();
         ShowWindow(SW_HIDE);
 
         bHandled = TRUE;
@@ -119,6 +106,26 @@ LRESULT window::OnSystemTrayExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     return 0;
 }
 
+int window::addTrayIcon()
+{
+	if (!m_NotifyIconData.cbSize)
+	{
+		m_NotifyIconData.cbSize = NOTIFYICONDATAA_V1_SIZE;
+		m_NotifyIconData.hWnd = m_hWnd;
+		m_NotifyIconData.uID = 1;
+		m_NotifyIconData.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+		m_NotifyIconData.uCallbackMessage = WM_SYSTEMTRAYICON;
+		m_NotifyIconData.hIcon = AtlLoadIconImage(IDR_MAINFRAME, LR_DEFAULTCOLOR, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+		ATL::CString sWindowText;
+		GetWindowText(sWindowText);
+		_tcscpy_s(m_NotifyIconData.szTip, sWindowText);
+	}
+
+	Shell_NotifyIcon(NIM_ADD, &m_NotifyIconData);
+
+	return 0;
+}
+
 LRESULT window::OnFileRefreshlist(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     if(!this->dlg_main_b)
@@ -132,7 +139,7 @@ LRESULT window::OnFileRefreshlist(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT window::OnAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     this->MessageBoxW(
-        L"Audio Router version 0.10.4.\n" \
+        L"Audio Router version 0.10.5.\n" \
         L"\nIf you come across any bugs(especially relating to routing or duplicating), " \
         L"or just have an idea for a new feature, " \
         L"please open an issue on github: github.com/a-sync/audio-router/", 

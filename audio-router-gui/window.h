@@ -57,4 +57,5 @@ public:
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
     LRESULT OnSystemTrayIcon(UINT, WPARAM wParam, LPARAM lParam);
     LRESULT OnRestore(UINT, INT, HWND);
+	int addTrayIcon();
 };
