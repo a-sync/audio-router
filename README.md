@@ -6,6 +6,11 @@
 
 [Here's a simple gif to show how it's used.](http://i.imgur.com/uq6ApMe.gif)
 
+Changelog 0.10.5:
+
+* New feature: option to start minimized to tray (`/min`)
+* Bugfix when populating the device list
+
 Changelog 0.10.4:
 
 * Exit on close button
